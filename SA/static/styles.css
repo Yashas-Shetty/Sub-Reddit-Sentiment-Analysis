@@ -1,0 +1,136 @@
+/* General Reset */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Dark theme */
+    color: white; /* Text color for better contrast */
+}
+
+/* Navbar Styling */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ff4500; /* Reddit orange */
+    padding: 10px 20px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between logo and title */
+}
+
+.navbar-logo img {
+    max-height: 50px; /* Limit logo height */
+    width: auto; /* Keep aspect ratio */
+}
+
+.navbar-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Content Styling */
+.content {
+    display: grid;
+    grid-template-columns: 1fr; /* Single-column layout */
+    gap: 20px;
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto; /* Center content */
+}
+
+/* Grid Box Styling */
+.grid-box {
+    background-color: #1c1c1c; /* Dark gray background */
+    padding: 20px;
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+/* Input Section Styling */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    text-align: center;
+    padding: 20px;
+    background-color: #1c1c1c; /* Dark gray background */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.input-section h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column; /* Stack input and button vertically */
+    align-items: center; /* Center horizontally */
+    gap: 15px; /* Add space between input and button */
+    width: 100%; /* Make it responsive */
+}
+
+#subreddit {
+    width: 80%; /* Adjust width for better responsiveness */
+    max-width: 400px; /* Limit maximum width */
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    background-color: #ff4500; /* Reddit orange */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    width: auto;
+    text-align: center;
+}
+
+button:hover {
+    background-color: #e63e00; /* Slightly darker orange on hover */
+}
+
+
+/* Results Section */
+#results {
+    font-size: 18px;
+    line-height: 1.5; /* Better spacing for text */
+}
+
+/* Chart Section */
+canvas {
+    width: 100%;
+    max-width: 400px; /* Limit chart size */
+    margin: 0 auto; /* Center the chart */
+    display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-title {
+        font-size: 18px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    #subreddit {
+        font-size: 14px;
+    }
+}

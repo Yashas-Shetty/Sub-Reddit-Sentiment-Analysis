@@ -1,0 +1,6 @@
+Flask
+python-dotenv
+praw
+pandas
+transformers
+torch

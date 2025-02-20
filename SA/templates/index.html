@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Sentiment Analysis</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Navbar Styling */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #ff4500; /* Reddit orange */
+            padding: 10px 20px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between logo and title */
+        }
+
+        .navbar-logo img {
+            max-height: 50px; /* Limit logo height */
+            width: auto;
+        }
+
+        .navbar-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Main Content Styling */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column layout */
+            gap: 20px;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .grid-box {
+            background-color: #1c1c1c;
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .head1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        #subreddit {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #ff4500;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #e63e00;
+        }
+
+        #results {
+            font-size: 18px;
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 400px; /* Limit chart size */
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="navbar-logo">
+            <img src="{{ url_for('static', filename='images/logoq.png') }}" alt="Reddit Logo">
+            <div class="navbar-title">Reddit Sentiment Analysis</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content">
+
+        <!-- Input Section (Grid Box 1) -->
+        <div class="grid-box input-section">
+            <h1 class="head1">Reddit Sentiment Analysis</h1>
+            <form id="analyze-form">
+                <label for="subreddit">Subreddit:</label>
+                <input type="text" id="subreddit" name="subreddit" placeholder="e.g. Python" required>
+                <button type="submit">Analyze</button>
+            </form>
+        </div>
+
+        <!-- Results Section (Grid Box 2) -->
+        <div id="results" class="grid-box results-section"></div>
+
+        <!-- Chart Section (Grid Box 3) -->
+        <div class="grid-box">
+            <canvas id="sentimentChart"></canvas>
+        </div>
+
+    </div>
+
+    <script>
+        document.querySelector('#analyze-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const subreddit = document.querySelector('#subreddit').value;
+
+            if (!subreddit) {
+                alert("Please enter a subreddit name.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ subreddit }),
+                });
+
+                const resultsDiv = document.querySelector('#results');
+
+                if (response.ok) {
+                    const result = await response.json();
+
+                    if (!result.positive_count || !result.negative_count) {
+                        resultsDiv.innerHTML = `<p>No sentiment data available for this subreddit.</p>`;
+                        return;
+                    }
+
+                    const totalComments = result.positive_count + result.negative_count;
+                    const positivePercentage = ((result.positive_count / totalComments) * 100).toFixed(2);
+                    const negativePercentage = ((result.negative_count / totalComments) * 100).toFixed(2);
+
+                    resultsDiv.innerHTML = `
+                        <h2>Sentiment Analysis Results:</h2>
+                        <ul>
+                            <li><strong>Positive:</strong> ${result.positive_count} comments (${positivePercentage}%)</li>
+                            <li><strong>Negative:</strong> ${result.negative_count} comments (${negativePercentage}%)</li>
+                        </ul>
+                    `;
+
+                    const ctx = document.getElementById('sentimentChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Positive', 'Negative'],
+                            datasets: [{
+                                data: [result.positive_count, result.negative_count],
+                                backgroundColor: ['#4CAF50', '#F44336'],
+                                borderColor: ['#388E3C', '#D32F2F'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            return tooltipItem.raw.toFixed(2) + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    const error = await response.json();
+                    resultsDiv.innerHTML = `<p>Error: ${error.error}</p>`;
+                }
+            } catch (err) {
+                console.error("Network error:", err);
+                alert("There was an error processing your request. Please try again.");
+            }
+        });
+    </script>
+
+</body>
+
+</html>
